@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { useState, ChangeEvent } from 'react'; // Import ChangeEvent for typing the event
-import { Button, Stack, VStack, Heading, Input, Text } from '@chakra-ui/react'; // Assuming you want to use Text for displaying the file name
+import { useState, ChangeEvent } from 'react';
+import { Button, Stack, VStack, Heading, Input, Text } from '@chakra-ui/react';
 import { Buttons } from "./Components/buttons";
 import { FaUpload, FaFile, FaSignature } from 'react-icons/fa';
 
@@ -11,7 +11,8 @@ function App() {
     const file = event.target.files ? event.target.files[0] : null;
     if (file) {
       setSelectedFile(file);
-      console.log(file); // For demonstration purposes
+      console.log(file);
+      console.log("MIME type:", file.type);
     }
   };
 
@@ -28,6 +29,7 @@ function App() {
   
     const formData = new FormData();
     formData.append('document', selectedFile);
+    formData.append('mimeType', selectedFile.type);
   
     try {
       const response = await axios.post('http://localhost:8080/submit', formData, {
