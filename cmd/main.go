@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/cmwaters/blobusign/node"
+	"github.com/cmwaters/blobusign/server"
 )
 
 func main() {
@@ -28,6 +29,10 @@ func run(ctx context.Context) error {
 	defer cancel()
 	err = nd.Start(ctx)
 	if err != nil {
+		return err
+	}
+
+	if err := server.Run(nd); err != nil {
 		return err
 	}
 
