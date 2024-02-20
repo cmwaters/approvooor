@@ -87,23 +87,38 @@ func (n *Node) Publish(ctx context.Context, data []byte) (ID, error) {
 	return NewID(height, ns, b.Commitment), nil
 }
 
-func (n *Node) Get(ctx context.Context, id ID) ([]byte, error) {
+func (n *Node) Get(ctx context.Context, id ID) (SignedDocument, error) {
+	signedDoc := SignedDocument{
+		Document:   nil,
+		Signatures: make([]Signature, 0),
+	}
 	namespace := id.Namespace()
 	earliestHeight := id.Height()
 
 	latestHeader, err := n.celnode.HeaderServ.NetworkHead(ctx)
 	if err != nil {
-		return nil, err
+		return signedDoc, err
 	}
 
 	for height := latestHeader.Height(); height >= earliestHeight; height-- {
-		_, err := n.celnode.BlobServ.GetAll(ctx, height, []share.Namespace{namespace})
+		blobs, err := n.celnode.BlobServ.GetAll(ctx, height, []share.Namespace{namespace})
 		if err != nil {
-			return nil, err
+			return signedDoc, err
 		}
+		for _, blob := range blobs {
+			var sigData Signature
+			err := json.Unmarshal(blob.Data, &sigData)
+			if err != nil {
+				// assume it's not a signature
+				signedDoc.Document = blob.Data
+				continue
+			}
+			signedDoc.Signatures = append(signedDoc.Signatures, sigData)
+		}
+
 	}
 
-	return nil, nil
+	return signedDoc, nil
 }
 
 func (n *Node) getDocument(ctx context.Context, id ID) ([]byte, error) {
@@ -148,4 +163,9 @@ func (n *Node) Sign(ctx context.Context, id ID) error {
 type Signature struct {
 	Signature []byte
 	PubKey    []byte
+}
+
+type SignedDocument struct {
+	Document   []byte
+	Signatures []Signature
 }

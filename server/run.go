@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,7 +12,7 @@ import (
 
 type Node interface {
 	Publish(ctx context.Context, data []byte) (node.ID, error)
-	Get(ctx context.Context, id node.ID) ([]byte, error)
+	Get(ctx context.Context, id node.ID) (node.SignedDocument, error)
 	Sign(ctx context.Context, id node.ID) error
 }
 
@@ -65,8 +66,14 @@ func Run(n Node) error {
 			return
 		}
 
+		docBytes, err := json.Marshal(doc)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to marshal document: %s", err.Error()), http.StatusInternalServerError)
+			return
+		}
+
 		w.WriteHeader(http.StatusOK)
-		if _, err := w.Write(doc); err != nil {
+		if _, err := w.Write(docBytes); err != nil {
 			http.Error(w, fmt.Sprintf("Failed to write document: %s", err.Error()), http.StatusInternalServerError)
 			return
 		}

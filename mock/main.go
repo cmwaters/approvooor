@@ -25,11 +25,19 @@ func (m *mockNode) Publish(ctx context.Context, data []byte) (node.ID, error) {
 	return []byte("mockID"), nil
 }
 
-func (m *mockNode) Get(ctx context.Context, id node.ID) ([]byte, error) {
+func (m *mockNode) Get(ctx context.Context, id node.ID) (node.SignedDocument, error) {
 	// Mock implementation
 	// In a real scenario, this would retrieve data from a node using the provided ID
 	fmt.Println("Received request to get data for ID", id)
-	return []byte("mockData"), nil
+	return node.SignedDocument{
+		Document: []byte("mockData"),
+		Signatures: []node.Signature{
+			{
+				Signature: []byte("mockSig"),
+				PubKey:    []byte("mockPubKey"),
+			},
+		},
+	}, nil
 }
 
 func (m *mockNode) Sign(ctx context.Context, id node.ID) error {
