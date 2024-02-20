@@ -32,7 +32,7 @@ func run(ctx context.Context) error {
 		return err
 	}
 
-	if err := server.Run(nd); err != nil {
+	if err := server.Start(nd); err != nil {
 		return err
 	}
 

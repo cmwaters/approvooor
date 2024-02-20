@@ -16,8 +16,8 @@ type Node interface {
 	Sign(ctx context.Context, id node.ID) error
 }
 
-// Run runs a http server over the node
-func Run(n Node) error {
+// Start runs a http server over the node
+func Start(n Node) error {
 	mux := http.NewServeMux()
 	// Handle document submission
 	mux.HandleFunc("/submit", func(w http.ResponseWriter, r *http.Request) {
@@ -109,7 +109,8 @@ func Run(n Node) error {
 	})
 
 	fmt.Println("Server running on :8080")
-	return http.ListenAndServe(":8080", mux)
+	go http.ListenAndServe(":8080", mux)
+	return nil
 }
 
 func enableCORS(w http.ResponseWriter) {

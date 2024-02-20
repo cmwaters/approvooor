@@ -11,7 +11,7 @@ import (
 func main() {
 	fmt.Println("Running mock server")
 	n := &mockNode{}
-	if err := server.Run(n); err != nil {
+	if err := server.Start(n); err != nil {
 		fmt.Printf("ERR: %s", err.Error())
 	}
 }
