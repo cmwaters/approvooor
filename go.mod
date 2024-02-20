@@ -1,4 +1,4 @@
-module github.com/cmwaters/approvoor
+module github.com/cmwaters/blobusign
 
 go 1.21.7
 
