@@ -47,7 +47,7 @@ function App() {
       <Buttons/>
       <VStack align="start" maxWidth="800px" mx="auto" width="100%">
         <Heading pb={5}>Blobusign</Heading>
-        <Heading size="md">Document transparency with Celestia underneath ✨</Heading>
+        <Heading size="md" pb={7}>Document transparency with Celestia underneath ✨</Heading>
         <Stack direction='row' spacing={4}>
           <Button leftIcon={<FaUpload />} colorScheme='purple' variant='solid' onClick={triggerFileUpload}>
             Upload Document
@@ -67,10 +67,7 @@ function App() {
             See Documents
           </Button>
         </Stack>
-        {selectedFile && <Text mt={2} color="gray">Selected file: {selectedFile.name}</Text>}
-        <Text>
-          Made in space by 👽
-        </Text>
+        {selectedFile && <Text mt={2}>Selected file: {selectedFile.name}</Text>}
       </VStack>
     </>
   );
