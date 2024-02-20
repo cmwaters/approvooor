@@ -22,6 +22,7 @@ import (
 )
 
 const (
+	nodeCoreIp  = "rpc-mocha.pops.one"
 	nodePath    = "~/.blobusign"
 	nodeType    = node.Light
 	nodeNetwork = p2p.Mocha
@@ -48,6 +49,7 @@ func NewNode() (*Node, error) {
 		cfg := nodebuilder.DefaultConfig(nodeType)
 		cfg.Header.TrustedHash = startHash
 		cfg.DASer.SampleFrom = startHeight
+		cfg.Core.IP = nodeCoreIp
 
 		err = nodebuilder.Init(*cfg, nodePath, nodeType)
 		if err != nil {

@@ -2,24 +2,52 @@ import axios from 'axios';
 import { useState, ChangeEvent } from 'react';
 import { Button, Stack, VStack, Heading, Input, Text, useToast } from '@chakra-ui/react';
 import { Buttons } from "./Components/buttons";
-import { FaUpload, FaFile, FaSignature } from 'react-icons/fa';
+import { FaUpload, FaFile, FaSignature, FaDownload } from 'react-icons/fa';
 
 function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const toast = useToast();
+  const [fileID, setFileID] = useState<string | null>(null);
+  const [inputFileID, setInputFileID] = useState<string>('');
+  const [fileBytes, setFileBytes] = useState<string | null>(null);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (file) {
       setSelectedFile(file);
-      console.log(file);
-      console.log("MIME type:", file.type);
     }
   };
 
   const triggerFileUpload = () => {
     const fileInput = document.getElementById('fileUploadInput') as HTMLInputElement;
     if (fileInput) fileInput.click();
+  };
+
+  const handleInputFileIDChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setInputFileID(event.target.value);
+  };
+
+  const getFileByID = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/get?id=${inputFileID}`);
+      setFileBytes(response.data);
+      toast({
+        title: 'File retrieved successfully.',
+        description: 'File bytes have been fetched.',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error('Error fetching file:', error);
+      toast({
+        title: 'Error fetching file.',
+        description: "There was an error fetching the file. Please check the file ID.",
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      });
+    }
   };
 
   const sendDocumentToCelestia = async () => {
@@ -39,6 +67,7 @@ function App() {
         },
       });
       console.log(response.data);
+      setFileID(response.data);
       toast({
         title: 'Document sent successfully.',
         description: `Response: ${response.data}`,
@@ -70,8 +99,8 @@ function App() {
   return (
     <>
       <Buttons/>
-      <VStack align="start" maxWidth="800px" mx="auto" width="100%">
-        <Heading pb={5}>Blobusign</Heading>
+      <VStack align="start" maxWidth="800px" mx={{ base: "6", sm: "8", md: "10", lg: "auto" }} width="100%">
+        <Heading pb={5}>BlobuSign</Heading>
         <Heading size="md" pb={7}>Document transparency with Celestia underneath ✨</Heading>
         <Stack direction='row' spacing={4}>
           <Button leftIcon={<FaUpload />} colorScheme='purple' variant='solid' onClick={triggerFileUpload}>
@@ -88,11 +117,23 @@ function App() {
               Send Document to Celestia
             </Button>
           )}
-          <Button rightIcon={<FaFile />} colorScheme='blue' variant='outline'>
+          {/* <Button rightIcon={<FaFile />} colorScheme='blue' variant='outline'>
             Get Documents
-          </Button>
+          </Button> */}
         </Stack>
-        {selectedFile && <Text mt={2}>Selected file: {selectedFile.name}</Text>}
+        <VStack>
+          {selectedFile && <Text mt={2}>Selected file: {selectedFile.name}</Text>}
+          {fileID && <Text mt={2}>Uploaded File ID: {fileID}</Text>}
+          <Input
+          placeholder="Enter File ID"
+          value={inputFileID}
+          onChange={handleInputFileIDChange}
+          />
+          <Button rightIcon={<FaDownload />} colorScheme='orange' variant='solid' onClick={getFileByID}>
+            Get File
+          </Button>
+          {fileBytes && <Text mt={2}>File Bytes: {fileBytes}</Text>}
+        </VStack>
       </VStack>
     </>
   );
