@@ -109,8 +109,7 @@ func Start(n Node) error {
 	})
 
 	fmt.Println("Server running on :8080")
-	go http.ListenAndServe(":8080", mux)
-	return nil
+	return http.ListenAndServe(":8080", mux)
 }
 
 func enableCORS(w http.ResponseWriter) {

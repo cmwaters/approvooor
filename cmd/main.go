@@ -32,9 +32,11 @@ func run(ctx context.Context) error {
 		return err
 	}
 
-	if err := server.Start(nd); err != nil {
-		return err
-	}
+	go func() {
+		if err := server.Start(nd); err != nil {
+			fmt.Printf("ERR: %s", err.Error())
+		}
+	}()
 
 	<-ctx.Done()
 	cancel() // ensure we stop reading more signals for start context
