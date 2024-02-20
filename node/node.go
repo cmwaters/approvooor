@@ -87,7 +87,19 @@ func (n *Node) Publish(ctx context.Context, data []byte) (ID, error) {
 }
 
 func (n *Node) Get(ctx context.Context, id ID) ([]byte, error) {
+	// namespace := id.Namespace()
+
+	// latestHeight, err := n.celnode.
+
 	return nil, nil
+}
+
+func (n *Node) getDocument(ctx context.Context, id ID) ([]byte, error) {
+	blob, err := n.celnode.BlobServ.Get(ctx, id.Height(), id.Namespace(), id.Committment())
+	if err != nil {
+		return nil, err
+	}
+	return blob.Data, nil
 }
 
 func (n *Node) Sign(ctx context.Context, id ID) error {
