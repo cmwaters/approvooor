@@ -99,7 +99,7 @@ function App() {
   return (
     <>
       <Buttons/>
-      <VStack align="start" maxWidth="800px" mx={{ base: "6", sm: "8", md: "10", lg: "auto" }} width="100%">
+      <VStack align="start" maxWidth="800px" mx={{ base: "2", sm: "4", md: "6", lg: "auto" }} width="100%">
         <Heading pb={5}>BlobuSign</Heading>
         <Heading size="md" pb={7}>Document transparency with Celestia underneath ✨</Heading>
         <Stack direction='row' spacing={4}>
