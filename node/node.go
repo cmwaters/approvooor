@@ -87,9 +87,20 @@ func (n *Node) Publish(ctx context.Context, data []byte) (ID, error) {
 }
 
 func (n *Node) Get(ctx context.Context, id ID) ([]byte, error) {
-	// namespace := id.Namespace()
+	namespace := id.Namespace()
+	earliestHeight := id.Height()
 
-	// latestHeight, err := n.celnode.
+	latestHeader, err := n.celnode.HeaderServ.NetworkHead(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for height := latestHeader.Height(); height >= earliestHeight; height-- {
+		_, err := n.celnode.BlobServ.GetAll(ctx, height, []share.Namespace{namespace})
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	return nil, nil
 }
