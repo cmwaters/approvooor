@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { useState, ChangeEvent } from 'react';
-import { Button, Stack, VStack, Heading, Input, Text } from '@chakra-ui/react';
+import { Button, Stack, VStack, Heading, Input, Text, useToast } from '@chakra-ui/react';
 import { Buttons } from "./Components/buttons";
 import { FaUpload, FaFile, FaSignature } from 'react-icons/fa';
 
 function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const toast = useToast();
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
@@ -38,9 +39,31 @@ function App() {
         },
       });
       console.log(response.data);
+      toast({
+        title: 'Document sent successfully.',
+        description: `Response: ${response.data}`,
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
   
     } catch (error) {
-      console.error('Error sending document:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('Axios error:', error.message);
+        if (error.response) {
+          console.error('Response data:', error.response.data);
+          console.error('Response status:', error.response.status);
+        }
+      } else {
+        console.error('Unexpected error:', error);
+      }
+      toast({
+        title: 'Error sending document.',
+        description: "There was an error sending the document. Please start your server.",
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      });
     }
   };
 
@@ -66,7 +89,7 @@ function App() {
             </Button>
           )}
           <Button rightIcon={<FaFile />} colorScheme='blue' variant='outline'>
-            See Documents
+            Get Documents
           </Button>
         </Stack>
         {selectedFile && <Text mt={2}>Selected file: {selectedFile.name}</Text>}
