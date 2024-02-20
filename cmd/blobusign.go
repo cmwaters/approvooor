@@ -42,5 +42,7 @@ func main() {
 		},
 	}
 
-	app.Run(os.Args)
+	if err := app.Run(os.Args); err != nil {
+		fmt.Printf("ERR: %s", err.Error())
+	}
 }

@@ -15,3 +15,11 @@ func (id ID) Height() uint64 {
 func (id ID) Committment() []byte {
 	panic("todo")
 }
+
+func Parse(id []byte) (ID, error) {
+	panic("todo")
+}
+
+func NewID() (ID, error) {
+	panic("todo")
+}
