@@ -41,7 +41,9 @@ func Start(n Node) error {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		_, err = w.Write(id)
+
+		idHex := fmt.Sprintf("%x", id)
+		_, err = w.Write([]byte(idHex))
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to write response: %s", err.Error()), http.StatusInternalServerError)
 			return
