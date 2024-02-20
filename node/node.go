@@ -25,6 +25,9 @@ const (
 	nodePath    = "~/.blobusign"
 	nodeType    = node.Light
 	nodeNetwork = p2p.Mocha
+
+	startHash   = "0E005E02A1EE6F9350E2B74EF388925F65B8EC1E6D11E3DD92DDD20C82A860F8"
+	startHeight = 1213740
 )
 
 type Node struct {
@@ -41,9 +44,15 @@ func NewNode() (*Node, error) {
 		return nil, err
 	}
 
-	err = nodebuilder.Init(*nodebuilder.DefaultConfig(nodeType), nodePath, nodeType)
-	if err != nil {
-		return nil, err
+	if !nodebuilder.IsInit(nodePath) {
+		cfg := nodebuilder.DefaultConfig(nodeType)
+		cfg.Header.TrustedHash = startHash
+		cfg.DASer.SampleFrom = startHeight
+
+		err = nodebuilder.Init(*cfg, nodePath, nodeType)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	store, err := nodebuilder.OpenStore(nodePath, signer)
