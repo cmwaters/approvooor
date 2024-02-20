@@ -130,26 +130,18 @@ func (n *Node) Get(ctx context.Context, id ID) (SignedDocument, error) {
 	return signedDoc, nil
 }
 
-func (n *Node) getDocument(ctx context.Context, id ID) ([]byte, error) {
-	blob, err := n.celnode.BlobServ.Get(ctx, id.Height(), id.Namespace(), id.Committment())
-	if err != nil {
-		return nil, err
-	}
-	return blob.Data, nil
-}
-
 func (n *Node) Sign(ctx context.Context, id ID) error {
 	keys, err := n.signer.List()
 	if err != nil {
 		return err
 	}
 
-	file, err := n.getDocument(ctx, id)
+	blob, err := n.celnode.BlobServ.Get(ctx, id.Height(), id.Namespace(), id.Committment())
 	if err != nil {
 		return err
 	}
 
-	signature, pubkey, err := n.signer.Sign(keys[0].Name, file)
+	signature, pubkey, err := n.signer.Sign(keys[0].Name, blob.Data)
 	if err != nil {
 		return err
 	}
