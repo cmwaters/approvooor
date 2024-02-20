@@ -2,9 +2,11 @@ package server
 
 import (
 	"net/http"
+
+	"github.com/cmwaters/blobusign/node"
 )
 
-func Run() error {
+func Run(node node.Node) error {
 	mux := http.NewServeMux()
 	// Handle PDF submission
 	mux.HandleFunc("/submit", func(w http.ResponseWriter, r *http.Request) {
@@ -12,6 +14,9 @@ func Run() error {
 			http.Error(w, "Method is not supported.", http.StatusMethodNotAllowed)
 			return
 		}
+
+		
+
 		// Assuming PDF processing happens here
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("PDF submitted successfully."))
