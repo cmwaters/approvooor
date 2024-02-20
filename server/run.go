@@ -21,6 +21,7 @@ func Start(n Node) error {
 	mux := http.NewServeMux()
 	// Handle document submission
 	mux.HandleFunc("/submit", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w)
 		if r.Method != "POST" {
 			http.Error(w, "Method is not supported", http.StatusMethodNotAllowed)
 			return
@@ -39,7 +40,6 @@ func Start(n Node) error {
 			return
 		}
 
-		enableCORS(w)
 		w.WriteHeader(http.StatusOK)
 		_, err = w.Write(id)
 		if err != nil {
@@ -50,6 +50,7 @@ func Start(n Node) error {
 
 	// Handle document retrieval
 	mux.HandleFunc("/get", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w)
 		if r.Method != "GET" {
 			http.Error(w, "Method is not supported", http.StatusMethodNotAllowed)
 			return
@@ -75,7 +76,6 @@ func Start(n Node) error {
 			return
 		}
 
-		enableCORS(w)
 		w.WriteHeader(http.StatusOK)
 		if _, err := w.Write(docBytes); err != nil {
 			http.Error(w, fmt.Sprintf("Failed to write document: %s", err.Error()), http.StatusInternalServerError)
@@ -85,6 +85,7 @@ func Start(n Node) error {
 
 	// Handle document signing
 	mux.HandleFunc("/sign", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w)
 		if r.Method != "POST" {
 			http.Error(w, "Method is not supported", http.StatusMethodNotAllowed)
 			return
@@ -104,7 +105,6 @@ func Start(n Node) error {
 			return
 		}
 
-		enableCORS(w)
 		w.WriteHeader(http.StatusOK)
 	})
 
