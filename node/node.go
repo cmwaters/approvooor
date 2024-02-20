@@ -8,14 +8,16 @@ import (
 
 	"github.com/celestiaorg/celestia-app/app"
 	"github.com/celestiaorg/celestia-app/app/encoding"
+	"github.com/celestiaorg/celestia-node/logs"
 	"github.com/celestiaorg/celestia-node/nodebuilder"
 	"github.com/celestiaorg/celestia-node/nodebuilder/node"
 	"github.com/celestiaorg/celestia-node/nodebuilder/p2p"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 
-	"github.com/celestiaorg/celestia-node/share"
 	appns "github.com/celestiaorg/celestia-app/pkg/namespace"
 	"github.com/celestiaorg/celestia-node/blob"
+	"github.com/celestiaorg/celestia-node/share"
+	"github.com/ipfs/go-log/v2"
 )
 
 const (
@@ -30,9 +32,15 @@ type Node struct {
 }
 
 func NewNode() (*Node, error) {
+	logs.SetAllLoggers(log.LevelInfo)
 	keysPath := filepath.Join(nodePath, "keys")
 	encConf := encoding.MakeConfig(app.ModuleEncodingRegisters...)
 	signer, err := keyring.New(app.Name, keyring.BackendTest, keysPath, os.Stdin, encConf.Codec)
+	if err != nil {
+		return nil, err
+	}
+
+	err = nodebuilder.Init(*nodebuilder.DefaultConfig(nodeType), nodePath, nodeType)
 	if err != nil {
 		return nil, err
 	}
@@ -50,6 +58,14 @@ func NewNode() (*Node, error) {
 	return &Node{celnode: node, signer: signer}, nil
 }
 
+func (n *Node) Start(ctx context.Context) error {
+	return n.celnode.Start(ctx)
+}
+
+func (n *Node) Stop(ctx context.Context) error {
+	return n.celnode.Stop(ctx)
+}
+
 func (n *Node) Publish(ctx context.Context, data []byte) (ID, error) {
 	hash := sha256.Sum256(data)
 	ns, err := share.NewBlobNamespaceV0(hash[:appns.NamespaceVersionZeroIDSize])
@@ -61,7 +77,6 @@ func (n *Node) Publish(ctx context.Context, data []byte) (ID, error) {
 	if err != nil {
 		return nil, err
 	}
-
 
 	height, err := n.celnode.BlobServ.Submit(ctx, []*blob.Blob{b}, blob.DefaultGasPrice())
 	if err != nil {
