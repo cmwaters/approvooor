@@ -38,7 +38,7 @@ func (m *mockNode) Publish(ctx context.Context, data []byte) (node.ID, error) {
 	// Mock implementation
 	// In a real scenario, this would interact with a node to publish data
 	fmt.Println("Received request to publish data", data)
-	return id, nil
+	return []byte("mockID"), nil
 }
 
 func (m *mockNode) Get(ctx context.Context, id node.ID) (node.SignedDocument, error) {
