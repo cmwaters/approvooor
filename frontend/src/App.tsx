@@ -30,7 +30,7 @@ function App() {
     formData.append('document', selectedFile);
   
     try {
-      const response = await axios.post('http://localhost:8080', formData, {
+      const response = await axios.post('http://localhost:8080/submit', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
