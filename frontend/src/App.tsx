@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useState, ChangeEvent } from 'react';
 import { Button, Stack, VStack, Heading, Input, Text, useToast } from '@chakra-ui/react';
 import { Buttons } from "./Components/buttons";
-import { FaUpload, FaFile, FaSignature, FaDownload } from 'react-icons/fa';
+import { FaUpload, FaSignature, FaDownload } from 'react-icons/fa';
 
 function App() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -88,7 +88,7 @@ function App() {
       }
       toast({
         title: 'Error sending document.',
-        description: "There was an error sending the document. Please start your server.",
+        description: "There was an error uploading the document. Please start your server.",
         status: 'error',
         duration: 9000,
         isClosable: true,
@@ -124,14 +124,14 @@ function App() {
         <VStack>
           {selectedFile && <Text mt={2}>Selected file: {selectedFile.name}</Text>}
           {fileID && <Text mt={2}>Uploaded File ID: {fileID}</Text>}
-          <Input
+          { fileID && <Input
           placeholder="Enter File ID"
           value={inputFileID}
           onChange={handleInputFileIDChange}
-          />
-          <Button rightIcon={<FaDownload />} colorScheme='orange' variant='solid' onClick={getFileByID}>
+          />}
+          { fileID && <Button leftIcon={<FaDownload />} colorScheme='orange' variant='solid' onClick={getFileByID}>
             Get File
-          </Button>
+          </Button>}
           {fileBytes && <Text mt={2}>File Bytes: {fileBytes}</Text>}
         </VStack>
       </VStack>
