@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -8,8 +9,14 @@ import (
 	"github.com/cmwaters/blobusign/node"
 )
 
+type Node interface {
+	Publish(ctx context.Context, data []byte) (node.ID, error)
+	Get(ctx context.Context, id node.ID) ([]byte, error)
+	Sign(ctx context.Context, id node.ID) error
+}
+
 // Run runs a http server over the node
-func Run(n node.Node) error {
+func Run(n Node) error {
 	mux := http.NewServeMux()
 	// Handle document submission
 	mux.HandleFunc("/submit", func(w http.ResponseWriter, r *http.Request) {
