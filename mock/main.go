@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/celestiaorg/celestia-node/blob"
+	"github.com/celestiaorg/celestia-node/share"
 	"github.com/cmwaters/blobusign/node"
 	"github.com/cmwaters/blobusign/server"
 )
@@ -16,13 +18,27 @@ func main() {
 	}
 }
 
+var id node.ID
+
+func init() {
+	mockNamespace, err := share.NewBlobNamespaceV0([]byte("mock"))
+	if err != nil {
+		panic(err)
+	}
+	mockBlob, err := blob.NewBlobV0(mockNamespace, []byte("mockData"))
+	if err != nil {
+		panic(err)
+	}
+	id = node.NewID(100, mockNamespace, mockBlob.Commitment)
+}
+
 type mockNode struct{}
 
 func (m *mockNode) Publish(ctx context.Context, data []byte) (node.ID, error) {
 	// Mock implementation
 	// In a real scenario, this would interact with a node to publish data
 	fmt.Println("Received request to publish data", data)
-	return []byte("mockID"), nil
+	return id, nil
 }
 
 func (m *mockNode) Get(ctx context.Context, id node.ID) (node.SignedDocument, error) {
