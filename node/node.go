@@ -3,6 +3,7 @@ package node
 import (
 	"context"
 	"crypto/sha256"
+	"encoding/json"
 	"os"
 	"path/filepath"
 
@@ -103,5 +104,37 @@ func (n *Node) getDocument(ctx context.Context, id ID) ([]byte, error) {
 }
 
 func (n *Node) Sign(ctx context.Context, id ID) error {
+	keys, err := n.signer.List()
+	if err != nil {
+		return err
+	}
+
+	file, err := n.getDocument(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	signature, pubkey, err := n.signer.Sign(keys[0].Name, file)
+	if err != nil {
+		return err
+	}
+
+	data, err := json.Marshal(&Signature{
+		signature, pubkey.Bytes(),
+	})
+	if err != nil {
+		return err
+	}
+
+	_, err = n.Publish(ctx, data) // Maybe we wanna use that sigID?
+	if err != nil {
+		return err
+	}
+
 	return nil
+}
+
+type Signature struct {
+	Signature []byte
+	PubKey    []byte
 }
