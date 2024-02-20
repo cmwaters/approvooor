@@ -17,7 +17,6 @@ const (
 	IDSize         = CommitmentSize + ns.NamespaceSize + HeightSize
 )
 
-// TODO: add constructor
 func NewID(height uint64, namespace ns.Namespace, committment blob.Commitment) ID {
 	heightBytes := make([]byte, HeightSize)
 	binary.BigEndian.PutUint64(heightBytes, height)
