@@ -38,6 +38,7 @@ func Run(n Node) error {
 			return
 		}
 
+		enableCORS(w)
 		w.WriteHeader(http.StatusOK)
 		_, err = w.Write(id)
 		if err != nil {
@@ -72,6 +73,7 @@ func Run(n Node) error {
 			return
 		}
 
+		enableCORS(w)
 		w.WriteHeader(http.StatusOK)
 		if _, err := w.Write(docBytes); err != nil {
 			http.Error(w, fmt.Sprintf("Failed to write document: %s", err.Error()), http.StatusInternalServerError)
@@ -99,8 +101,15 @@ func Run(n Node) error {
 			return
 		}
 
+		enableCORS(w)
 		w.WriteHeader(http.StatusOK)
 	})
 
 	return http.ListenAndServe(":8080", mux)
+}
+
+func enableCORS(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 }
