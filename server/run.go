@@ -35,6 +35,7 @@ func Run(n Node) error {
 		id, err := n.Publish(r.Context(), body)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to publish document: %s", err.Error()), http.StatusBadRequest)
+			fmt.Println("publish", err)
 			return
 		}
 
@@ -64,6 +65,7 @@ func Run(n Node) error {
 		doc, err := n.Get(r.Context(), node.ID(id))
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to retrieve document: %s", err.Error()), http.StatusBadRequest)
+			fmt.Println("get", err)
 			return
 		}
 
@@ -98,6 +100,7 @@ func Run(n Node) error {
 		err = n.Sign(r.Context(), node.ID(id))
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to sign document: %s", err.Error()), http.StatusBadRequest)
+			fmt.Println("sign", err)
 			return
 		}
 
@@ -105,6 +108,7 @@ func Run(n Node) error {
 		w.WriteHeader(http.StatusOK)
 	})
 
+	fmt.Println("Server running on :8080")
 	return http.ListenAndServe(":8080", mux)
 }
 
